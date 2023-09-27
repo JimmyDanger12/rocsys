@@ -1,0 +1,8 @@
+on OL:
+- implement robot movement
+- implement move to home position
+- implement vision correction algorithm
+
+on RL: 
+- implement docker down/other errors
+- output json

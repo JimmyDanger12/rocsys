@@ -1,0 +1,12 @@
+[2023-09-27 16:18:09,235] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-09-27 16:18:14,189] - [rocsys.server] - [INFO] - Received message socket_det: {'result': 1, 'unit': 'm/rad', 'coords': [0.3873, 0.0356, 0.0388, -0.0201, 0.4124, 0.2328]}
+[2023-09-27 16:18:14,189] - [rocsys.command_handler] - [INFO] - Executing command socket_det starting
+[2023-09-27 16:18:14,189] - [rocsys.command_handler] - [INFO] - Executing socket_det finished
+[2023-09-27 16:19:12,418] - [rocsys.server] - [INFO] - Received message move_home: 
+[2023-09-27 16:19:12,421] - [rocsys.command_handler] - [INFO] - Executing command move_home starting
+[2023-09-27 16:19:12,421] - [rocsys.command_handler] - [WARNING] - Unknown robot command
+[2023-09-27 16:19:12,422] - [rocsys.command_handler] - [INFO] - Executing move_home finished
+[2023-09-27 16:19:51,654] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-09-27 16:19:55,257] - [rocsys.server] - [INFO] - Received message move_home: 
+[2023-09-27 16:19:55,258] - [rocsys.command_handler] - [INFO] - Executing command move_home starting
+[2023-09-27 16:19:55,258] - [rocsys.command_handler] - [INFO] - Executing move_home finished

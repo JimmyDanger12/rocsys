@@ -1,0 +1,29 @@
+message structure:
+{
+    "message_type": type (str="cmd","msg"),
+    "content": content (str),
+    "data": data (dict)
+}
+
+examples:
+{
+    "message_type": "cmd",
+    "content": "move_home",
+    "data": None
+},
+{
+    "message_type": "cmd",
+    "content": "socket_detection",
+    "data": {
+        "result": 1,
+        "unit": "m/rad",
+        "coords": [x,y,z,rx,ry,rz]
+    }
+},
+{
+    "message_type": "msg",
+    "content": "container_down",
+    "data": {
+        "code": 134
+    }
+}
