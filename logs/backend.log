@@ -1,0 +1,45 @@
+[2023-09-29 10:27:53,805] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-09-29 10:39:00,782] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-09-29 10:39:40,468] - [rocsys.server] - [ERROR] - 'int' object is not subscriptable
+[2023-09-29 10:42:09,034] - [rocsys.server] - [ERROR] - 'int' object is not subscriptable
+[2023-09-29 10:42:41,143] - [rocsys.server] - [ERROR] - Expecting property name enclosed in double quotes: line 2 column 5 (char 6)
+[2023-09-29 10:46:36,243] - [rocsys.server] - [ERROR] - Expecting property name enclosed in double quotes: line 2 column 5 (char 6)
+[2023-09-29 10:46:58,267] - [rocsys.server] - [ERROR] - Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+[2023-09-29 10:48:06,759] - [rocsys.server] - [ERROR] - Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+[2023-09-29 10:48:18,869] - [rocsys.server] - [ERROR] - Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+[2023-09-29 10:49:54,191] - [rocsys.server] - [ERROR] - Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+[2023-09-29 10:58:55,953] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 18 (char 17)
+[2023-09-29 10:59:04,443] - [rocsys.server] - [ERROR] - Expecting ',' delimiter: line 1 column 65 (char 64)
+[2023-09-29 11:01:07,141] - [rocsys.server] - [ERROR] - Expecting ',' delimiter: line 1 column 65 (char 64)
+[2023-09-29 11:01:18,495] - [rocsys.server] - [ERROR] - Expecting ',' delimiter: line 1 column 65 (char 64)
+[2023-09-29 11:29:27,033] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': '1', 'unit': 'm/rad', 'coords': [0.3394, 0.0124, -0.0333, -0.0253, 0.2655, 0.0005]}
+[2023-09-29 11:29:27,035] - [rocsys.command_handler] - [INFO] - Executing command socket_detection starting
+[2023-09-29 11:29:27,041] - [rocsys.command_handler] - [INFO] - Executing socket_detection finished
+[2023-09-29 12:12:55,265] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-09-29 12:13:03,642] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 46 (char 45)
+[2023-09-29 12:15:30,075] - [rocsys.server] - [INFO] - Received message : {'message': 'Unknown socket response'}
+[2023-09-29 12:19:03,531] - [rocsys.server] - [INFO] - Received message : {'message': 'Unknown socket response'}
+[2023-09-29 12:19:06,950] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 46 (char 45)
+[2023-09-29 12:20:33,614] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 46 (char 45)
+[2023-09-29 12:21:06,878] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 46 (char 45)
+[2023-09-29 12:24:44,191] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 46 (char 45)
+[2023-09-29 12:28:09,737] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 46 (char 45)
+[2023-09-29 12:28:25,927] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 46 (char 45)
+[2023-09-29 12:29:00,065] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 46 (char 45)
+[2023-09-29 12:29:47,601] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 69 (char 68)
+[2023-09-29 12:30:06,275] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 69 (char 68)
+[2023-09-29 12:30:38,194] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 69 (char 68)
+[2023-09-29 12:32:03,468] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 69 (char 68)
+[2023-09-29 12:32:26,193] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 60 (char 59)
+[2023-09-29 12:33:59,018] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 69 (char 68)
+[2023-09-29 12:34:11,519] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 60 (char 59)
+[2023-09-29 12:34:31,129] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 60 (char 59)
+[2023-09-29 12:35:51,823] - [rocsys.server] - [ERROR] - Expecting value: line 1 column 60 (char 59)
+[2023-09-29 12:37:26,750] - [rocsys.server] - [INFO] - Received message container_down: {'message': 'Error response from daemon: Container 037939437cb6a44850c5e2d436da238ab681ca731f414af61923cfaa1d20f7f8 is not running'}
+[2023-09-29 12:47:33,228] - [rocsys.server] - [ERROR] - Expecting property name enclosed in double quotes: line 1 column 63 (char 62)
+[2023-09-29 12:48:13,401] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': 2}
+[2023-09-29 12:48:13,402] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-09-29 12:48:13,402] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-09-29 12:48:31,144] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': '1', 'unit': 'm/rad', 'coords': [0.3492, -0.0145, -0.0382, -0.0173, 0.4578, -0.0393]}
+[2023-09-29 12:48:31,145] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-09-29 12:48:31,145] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished

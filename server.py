@@ -4,7 +4,7 @@ import logging
 from globalconfig import GlobalConfig
 from roc_logging import setup_logging, get_logger
 from robot import RobotController
-from command_handler import CommandHandler
+from message_handler import MessageHandler
 
 FIELD_MESSAGE_TYPE = "message_type"
 FIELD_CONTENT = "content"
@@ -52,7 +52,7 @@ class Server():
         global_speed = config["ROBOT", "global_speed"]
 
         self.robot_controller = RobotController(home_position, global_speed)
-        self.command_handler = CommandHandler(self, self.robot_controller)
+        self.message_handler = MessageHandler(self, self.robot_controller)
 
         @self.server.route(route, methods=["POST"])
         def receive_docker_output():
@@ -96,7 +96,7 @@ class Server():
             }
         """
 
-        message = json.loads(message.replace("'",'"'))
+        message = json.loads(message)
         message_type = message[FIELD_MESSAGE_TYPE]
         content = message[FIELD_CONTENT]
         data = message[FIELD_DATA]
@@ -107,10 +107,9 @@ class Server():
         )
 
         if message_type == CMD:
-            self.command_handler.handle_command(content, data)
+            self.message_handler.handle_command(content, data)
         elif message_type == MSG:
-            #TODO implement msg (e.g. container down) handling
-            pass
+            self.message_handler.handle_message(content, data)
         else:
             get_logger(__name__).log(
                 logging.ERROR,

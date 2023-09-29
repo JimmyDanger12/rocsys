@@ -4,12 +4,14 @@ from roc_logging import get_logger
 
 CMD_HOME = "move_home"
 CMD_SOCKET_DET = "socket_detection"
+MSG_CONTAINER_DOWN = "container_down"
+MSG_UNKNOWN_RESPONSE = "unknown_response"
 
 RES_FAIL = 0
 RES_SUCCESS = 1
 RES_UNRELIABLE = 2
 
-class CommandHandler():
+class MessageHandler():
     """
     This class handles the management of the robot commands 
     and relays them to the robot
@@ -62,3 +64,16 @@ class CommandHandler():
             logging.INFO,
             f"Executing {command} finished"
         )
+    
+    def handle_message(self, content, message):
+        if content == "container_down":
+            #TODO: what to do when container is down?
+            get_logger(__name__).log(
+                logging.WARNING,
+                f"{message}"
+            )
+        else:
+            get_logger(__name__).log(
+                logging.WARNING,
+                f"Received unknown message: {message}"
+            )

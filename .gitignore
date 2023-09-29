@@ -1,4 +1,3 @@
-data/
 .vs
 *.user
 venv-*/
@@ -6,4 +5,4 @@ venv-*/
 *.env
 *.log.[0-9]
 *.log.[0-9][0-9]
-logs/
+data/
