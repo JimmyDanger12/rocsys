@@ -63,7 +63,8 @@ class Server():
             Returns:
                 returns a message to original sender
             """
-            message_raw = request.data.decode("utf-8")
+
+            message_raw = request.get_json()
             try:
                 self.handle_message(message_raw)
                 return jsonify({FIELD_MESSAGE: "Docker output received successfully"}), 200
@@ -95,15 +96,18 @@ class Server():
                 data (dict)
             }
         """
+        missing_keys = {FIELD_MESSAGE_TYPE, FIELD_CONTENT, FIELD_DATA}.difference(message.keys())
+        
+        if missing_keys:
+            raise Exception(f"Message is missing key(s): {missing_keys}")
 
-        message = json.loads(message)
         message_type = message[FIELD_MESSAGE_TYPE]
         content = message[FIELD_CONTENT]
         data = message[FIELD_DATA]
 
         get_logger(__name__).log(
             logging.INFO,
-            f"Received message {content}: {data}"
+            f"Received message {message}"
         )
 
         if message_type == CMD:
