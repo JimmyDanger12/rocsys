@@ -43,3 +43,50 @@
 [2023-09-29 12:48:31,144] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': '1', 'unit': 'm/rad', 'coords': [0.3492, -0.0145, -0.0382, -0.0173, 0.4578, -0.0393]}
 [2023-09-29 12:48:31,145] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
 [2023-09-29 12:48:31,145] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 11:41:04,599] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-02 11:41:37,426] - [rocsys.server] - [ERROR] - Expecting ',' delimiter: line 1 column 6 (char 5)
+[2023-10-02 12:31:10,284] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-02 12:31:43,252] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': 0}
+[2023-10-02 12:31:43,252] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 12:31:43,258] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 12:32:29,883] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': 0}
+[2023-10-02 12:32:29,883] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 12:32:29,883] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 12:32:37,561] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-02 12:32:41,055] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': 0}
+[2023-10-02 12:32:41,061] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 12:32:41,061] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 13:05:01,835] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': 0}
+[2023-10-02 13:05:01,842] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 13:05:01,842] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 13:06:57,444] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': 0}
+[2023-10-02 13:06:57,444] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 13:06:57,444] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 13:07:18,380] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': 0}
+[2023-10-02 13:07:18,380] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 13:07:18,380] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 13:07:38,834] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': 0}
+[2023-10-02 13:07:38,834] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 13:07:38,849] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 13:08:52,405] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': 0}
+[2023-10-02 13:08:52,405] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 13:08:52,410] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 13:09:35,836] - [rocsys.server] - [INFO] - Received message socket_detection: {'result': 0}
+[2023-10-02 13:09:35,836] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 13:09:35,841] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 13:19:06,166] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-02 13:19:10,771] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'socket_detection', 'data': {'result': 0}}
+[2023-10-02 13:19:10,771] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 13:19:10,771] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 13:19:23,956] - [rocsys.server] - [ERROR] - Message is missing keys: {'content'}
+[2023-10-02 13:20:06,342] - [rocsys.server] - [ERROR] - Message is missing keys: {'content'}
+[2023-10-02 13:23:26,670] - [rocsys.server] - [ERROR] - Message is missing keys: {'content'}
+[2023-10-02 13:24:43,559] - [rocsys.server] - [ERROR] - Message is missing keys: {'content'}
+[2023-10-02 13:25:15,298] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'socket_detection', 'data': {'result': 0}}
+[2023-10-02 13:25:15,298] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-02 13:25:15,298] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-02 13:34:54,039] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-02 13:34:56,581] - [rocsys.server] - [INFO] - Received message {'message_type': 'msg', 'content': 'container_down', 'data': {'message': 'Error response from daemon: Container 037939437cb6a44850c5e2d436da238ab681ca731f414af61923cfaa1d20f7f8 is not running\n'}}
+[2023-10-02 13:34:56,581] - [rocsys.message_handler] - [WARNING] - {'message': 'Error response from daemon: Container 037939437cb6a44850c5e2d436da238ab681ca731f414af61923cfaa1d20f7f8 is not running\n'}
+[2023-10-03 10:44:54,275] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-03 10:44:55,819] - [rocsys.server] - [Level 100] - Flask server shutting down

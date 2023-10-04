@@ -4,6 +4,7 @@ from roc_logging import get_logger
 
 CMD_HOME = "move_home"
 CMD_SOCKET_DET = "socket_detection"
+CMD_UNPLUG = "start_unplug"
 MSG_CONTAINER_DOWN = "container_down"
 MSG_UNKNOWN_RESPONSE = "unknown_response"
 
@@ -36,10 +37,12 @@ class MessageHandler():
             f"Executing command {command} starting"
         )
         if command == CMD_HOME:
-            self.robot_controller.move_home()            
+            self.robot_controller.move_home()          
         
         elif command == CMD_SOCKET_DET:
             if data["result"] == RES_SUCCESS:
+
+                #TODO: implement home/quadrant differentiation
                 try:
                     unit = data["unit"]
                 except KeyError:
@@ -53,6 +56,9 @@ class MessageHandler():
             
             elif data["result"] == RES_FAIL or data["result"] == RES_UNRELIABLE:
                 self.robot_controller.reposition_eoat(data)
+        
+        elif command == CMD_UNPLUG:
+            self.robot_controller.unplug()
         
         else:
             get_logger(__name__).log(
