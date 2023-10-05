@@ -25,8 +25,9 @@ class MessageHandler():
         self.robot_controller = robot_controller
         self.robot_controller.message_handler = self
         self.robot_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.robot_socket.settimeout(15)
         try:
-            self.robot_socket.connect(self.robot_controller.ip, self.robot_controller.port)
+            self.robot_socket.connect((self.robot_controller.ip, int(self.robot_controller.port)))
             get_logger(__name__).log(logging.INFO,
                                      f"Connection to robot socket established")
         except Exception as e:
@@ -103,7 +104,7 @@ class MessageHandler():
                     f"Sent command {message} to socket")
 
         current_robot_pos = self.robot_socket.recv(1024).decode()
-        self.robot_controller.current_pos = current_robot_pos
+        self.robot_controller.current_position = current_robot_pos
         get_logger(__name__).log(logging.INFO,
                                  f"Received and updated new robot pos {current_robot_pos}")
         
