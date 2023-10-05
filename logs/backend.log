@@ -90,3 +90,60 @@
 [2023-10-02 13:34:56,581] - [rocsys.message_handler] - [WARNING] - {'message': 'Error response from daemon: Container 037939437cb6a44850c5e2d436da238ab681ca731f414af61923cfaa1d20f7f8 is not running\n'}
 [2023-10-03 10:44:54,275] - [rocsys.server] - [Level 100] - Flask server starting...
 [2023-10-03 10:44:55,819] - [rocsys.server] - [Level 100] - Flask server shutting down
+[2023-10-04 13:13:42,297] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-04 13:18:20,213] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'move_home', 'data': {}}
+[2023-10-04 13:18:20,213] - [rocsys.message_handler] - [INFO] - Executing command move_home starting
+[2023-10-04 13:18:23,932] - [rocsys.message_handler] - [INFO] - Executing move_home finished
+[2023-10-04 13:18:55,228] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-04 13:19:01,512] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'move_home', 'data': {}}
+[2023-10-04 13:19:01,512] - [rocsys.message_handler] - [INFO] - Executing command move_home starting
+[2023-10-04 13:19:05,277] - [rocsys.message_handler] - [INFO] - Executing move_home finished
+[2023-10-04 13:19:39,435] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'move_home', 'data': {}}
+[2023-10-04 13:19:39,450] - [rocsys.message_handler] - [INFO] - Executing command move_home starting
+[2023-10-04 13:19:41,951] - [rocsys.message_handler] - [INFO] - Executing move_home finished
+[2023-10-04 13:19:42,451] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'socket_detection', 'data': {'result': 0}}
+[2023-10-04 13:19:42,451] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-04 13:19:44,850] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-04 13:23:41,283] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'move_home', 'data': {}}
+[2023-10-04 13:23:41,283] - [rocsys.message_handler] - [INFO] - Executing command move_home starting
+[2023-10-04 13:23:47,345] - [rocsys.message_handler] - [INFO] - Executing move_home finished
+[2023-10-04 13:23:47,378] - [rocsys.server] - [INFO] - Received message {'message_type': 'msg', 'content': 'container_down', 'data': {'message': 'Error response from daemon: Container 912e773cc163e533f6cda08e470b8af1e9026b13d134b2989b0a0dc08a95e9a2 is not running\n'}}
+[2023-10-04 13:23:47,378] - [rocsys.message_handler] - [WARNING] - {'message': 'Error response from daemon: Container 912e773cc163e533f6cda08e470b8af1e9026b13d134b2989b0a0dc08a95e9a2 is not running\n'}
+[2023-10-04 13:24:11,867] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-04 13:24:30,729] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'move_home', 'data': {}}
+[2023-10-04 13:24:30,745] - [rocsys.message_handler] - [INFO] - Executing command move_home starting
+[2023-10-04 13:24:30,745] - [rocsys.message_handler] - [INFO] - Executing move_home finished
+[2023-10-04 13:24:31,317] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'socket_detection', 'data': {'result': 1, 'unit': 'm/rad', 'coords': '[2023-10-04 11:24:29,965] [INFO] [root]: Socket detected with success\n[2023-10-04 11:24:29,965] [INFO] [root]:        x[m],y[m],z[m],rx[rad],ry[rad],rz[rad]\n[2023-10-04 11:24:29,965] [INFO] [root]: Pose: [0.5327,0.0497,0.0470,0.0020,0.0231,-0.0687]\n[2023-10-04 11:24:29,965] [INFO] [root]:        x[mm],y[mm],z[mm],rx[deg],ry[deg],rz[deg]\n[2023-10-04 11:24:29,965] [INFO] [root]: Pose: [532.7,49.7,47.0,0.0,0.0,-0.0]'}}
+[2023-10-04 13:24:31,319] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-04 13:24:31,320] - [rocsys.server] - [ERROR] - must be real number, not str
+[2023-10-04 13:25:30,830] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'move_home', 'data': {}}
+[2023-10-04 13:25:30,830] - [rocsys.message_handler] - [INFO] - Executing command move_home starting
+[2023-10-04 13:25:30,830] - [rocsys.message_handler] - [INFO] - Executing move_home finished
+[2023-10-04 13:25:31,374] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'socket_detection', 'data': {'result': 1, 'unit': 'm/rad', 'coords': '[2023-10-04 11:25:30,019] [INFO] [root]: Socket detected with success\n[2023-10-04 11:25:30,019] [INFO] [root]:        x[m],y[m],z[m],rx[rad],ry[rad],rz[rad]\n[2023-10-04 11:25:30,019] [INFO] [root]: Pose: [0.5317,0.0495,0.0468,-0.0028,0.0623,-0.0967]\n[2023-10-04 11:25:30,019] [INFO] [root]:        x[mm],y[mm],z[mm],rx[deg],ry[deg],rz[deg]\n[2023-10-04 11:25:30,019] [INFO] [root]: Pose: [531.7,49.5,46.8,-0.0,0.0,-0.0]'}}
+[2023-10-04 13:25:31,377] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-04 13:26:49,080] - [rocsys.server] - [ERROR] - must be real number, not str
+[2023-10-04 13:27:42,892] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'move_home', 'data': {}}
+[2023-10-04 13:27:42,892] - [rocsys.message_handler] - [INFO] - Executing command move_home starting
+[2023-10-04 13:27:42,892] - [rocsys.message_handler] - [INFO] - Executing move_home finished
+[2023-10-04 13:27:43,826] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'socket_detection', 'data': {'result': 1, 'unit': 'm/rad', 'coords': '[2023-10-04 11:27:42,440] [INFO] [root]: Socket detected with success\n[2023-10-04 11:27:42,440] [INFO] [root]:        x[m],y[m],z[m],rx[rad],ry[rad],rz[rad]\n[2023-10-04 11:27:42,441] [INFO] [root]: Pose: [0.5304,0.0492,0.0468,-0.0010,0.0446,-0.1002]\n[2023-10-04 11:27:42,441] [INFO] [root]:        x[mm],y[mm],z[mm],rx[deg],ry[deg],rz[deg]\n[2023-10-04 11:27:42,441] [INFO] [root]: Pose: [530.4,49.2,46.8,-0.0,0.0,-0.0]'}}
+[2023-10-04 13:27:43,826] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-04 13:35:04,775] - [rocsys.server] - [ERROR] - must be real number, not str
+[2023-10-04 13:37:30,394] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-04 13:37:35,123] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'move_home', 'data': {}}
+[2023-10-04 13:37:35,123] - [rocsys.message_handler] - [INFO] - Executing command move_home starting
+[2023-10-04 13:37:35,128] - [rocsys.message_handler] - [INFO] - Executing move_home finished
+[2023-10-04 13:37:35,481] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'socket_detection', 'data': {'result': 1, 'unit': 'm/rad', 'coords': [0.5311, 0.0497, 0.0469, 0.0018, 0.0088, -0.1206]}}
+[2023-10-04 13:37:35,497] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-04 13:38:13,509] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-04 13:38:42,928] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'move_home', 'data': {}}
+[2023-10-04 13:38:42,941] - [rocsys.message_handler] - [INFO] - Executing command move_home starting
+[2023-10-04 13:38:42,943] - [rocsys.message_handler] - [INFO] - Executing move_home finished
+[2023-10-04 13:38:43,262] - [rocsys.server] - [INFO] - Received message {'message_type': 'cmd', 'content': 'socket_detection', 'data': {'result': 1, 'unit': 'm/rad', 'coords': [0.5339, 0.0499, 0.0471, -0.0041, 0.0068, -0.0369]}}
+[2023-10-04 13:38:43,262] - [rocsys.message_handler] - [INFO] - Executing command socket_detection starting
+[2023-10-04 13:38:52,867] - [rocsys.message_handler] - [INFO] - Executing socket_detection finished
+[2023-10-04 13:52:51,817] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-04 13:52:54,890] - [rocsys.server] - [Level 100] - Flask server shutting down
+[2023-10-05 12:01:39,423] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-05 12:01:53,118] - [rocsys.server] - [Level 100] - Flask server starting...
+[2023-10-05 12:01:53,118] - [rocsys.message_handler] - [ERROR] - Error in establishing connection to socket socket.connect() takes exactly one argument (2 given)
+[2023-10-05 12:01:55,173] - [rocsys.server] - [Level 100] - Flask server shutting down
