@@ -50,8 +50,7 @@ class MessageHandler():
             f"Executing command {command} starting"
         )
         if command == CMD_HOME:
-            pass
-            #self.robot_controller.move_home()          
+            self.robot_controller.move_home()          
         
         elif command == CMD_SOCKET_DET:
             if data["result"] == RES_SUCCESS:
@@ -99,13 +98,13 @@ class MessageHandler():
 
     def send_message(self, message=str):
         response = None
+        get_logger(__name__).log(logging.INFO,
+            f"Sent command {message} to socket")
         self.robot_socket.sendall(message.encode())
-        get_logger(__name__).log(logging.INFO,
-                    f"Sent command {message} to socket")
 
-        current_robot_pos = self.robot_socket.recv(1024).decode()
-        self.robot_controller.current_position = current_robot_pos
+        current_robot_pos = eval(self.robot_socket.recv(1024).decode())
+        self.robot_controller.current_position = current_robot_pos[0]
         get_logger(__name__).log(logging.INFO,
-                                 f"Received and updated new robot pos {current_robot_pos}")
+                                 f"Received and updated new robot pos {self.robot_controller.current_position}")
         
         return response

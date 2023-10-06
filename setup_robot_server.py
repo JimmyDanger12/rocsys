@@ -1,9 +1,8 @@
-import socket
-import time
 from DRCF import *
+import socket
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(('0.0.0.0', 7000))  # Replace with appropriate IP and port
+server_socket.bind(('0.0.0.0', 7007))  # Replace with appropriate IP and port
 server_socket.listen(1)
 
 print('Server listening for connections...')
@@ -17,25 +16,19 @@ while True:
         print('Connection established with:', client_address)
 
         while True:
-            command = client_socket.recv(1024).decode()  # Receive DRL command from client
-            
+            command = client_socket.recv(1024).decode("utf-8")  # Receive DRL command from client
             if not command:
                 # If no command is received, the client has closed the connection
                 print('Client closed the connection.')
                 break
             
             # Execute the DRL command on the robot
-            try:
-                exec(command)
-                wait(0.5)
-            except Exception as e:
-                print(e)
-            current_pos = get_current_posx()
-            # Send "received" message back to the client
-            client_socket.sendall(current_pos.encode())
+            exec(command)
+            wait(0.5)
 
-        # Close the client socket after all commands are received and processed
-        client_socket.close()
+            current_pos = str(get_current_posx())
+            # Send "received" message back to the client
+            client_socket.sendall(current_pos.encode("utf-8"))
 
     except socket.timeout:
         # Handle timeout exception, meaning no new messages received for 60 seconds
@@ -43,4 +36,5 @@ while True:
         break
 
     finally:
+        client_socket.close()
         server_socket.close()

@@ -49,7 +49,7 @@ class RobotController:
         Args:
             data (_type_): _description_
         """
-        #TODO:
+        #TODO: implement (optional)
         pass
 
     def socket_detection(self, unit, coords):
@@ -72,13 +72,14 @@ class RobotController:
         if self.current_position == self.home_positon:
             #if robot is at starting location: move close to the robot and retake image
             #TODO: implement offset
-            coords[0] -= 20
-            command = f"""movej({coords},mod=DR_MV_MOD_REL)"""
+            coords[0] -= 200
+            command = f"""movel({coords},vel=100, acc=100, mod={DR_MV_MOD_REL})"""
             self._send_message(command)
-            wait(10) #wait for robot movement #TODO: adjust
+            wait(10) #wait for robot movement to finish #TODO:
             response = "retake image"
         else:
-            command = f"""movej({coords},mod=DR_MV_MOD_REL)"""
+            coords[0] -= 200
+            command = f"""movel({coords},vel=100, acc = 100, mod={DR_MV_MOD_REL})"""
             self._send_message(command)
             self.plug_in()
 
@@ -86,8 +87,8 @@ class RobotController:
     
     def plug_in(self):
         #TODO: more precise
-        amp = [-100,10,0,0,0,0]
-        period = [8,1,0,0,0,0]
+        amp = [-50,5,0,0,0,0]
+        period = [4,0.5,0,0,0,0]
         wait_time = 2
         command = f"""
             amove_periodic({amp},
@@ -102,7 +103,8 @@ class RobotController:
         """
         Moves the robot to the home position (set in config)
         """
-        command = """move_home(DR_HOME_TARGET_USER)"""
+        command = f"""move_home({DR_HOME_TARGET_USER})"""
+
         self._send_message(command)
 
     def plug_out(self):
@@ -112,8 +114,8 @@ class RobotController:
         #TODO: wiggle?
         movement = [50,0,0,0,0,0]
         command = f"""
-            movel({movement}, ref=DR_TOOL, mod=DR_MV_MOD_REL)
-            move_home(DR_HOME_TARGET_USER)
+            movel({movement}, ref={DR_TOOL}, mod={DR_MV_MOD_REL})
+            move_home({DR_HOME_TARGET_USER})
             """
         self._send_message(command)
         
@@ -121,4 +123,4 @@ class RobotController:
     
     def _send_message(self, command):
         message = str(command)
-        self.message_handler.send_message(self.ip, self.port, message)
+        self.message_handler.send_message(message)
