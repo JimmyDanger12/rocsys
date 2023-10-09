@@ -81,7 +81,7 @@ class RobotController:
             coords[0] -= 200
             command = f"""movel({coords},vel=100, acc = 100, mod={DR_MV_MOD_REL})"""
             self._send_message(command)
-            self.plug_in()
+            #self.plug_in()
 
         return response
     
