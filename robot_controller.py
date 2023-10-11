@@ -74,6 +74,7 @@ class RobotController:
             #if robot is at starting location: move close to the robot and retake image
             #TODO: implement offset
             self.counter +=1
+            print("home")
             #camera offset
             coords[0] += -82
             coords[2] += 59
@@ -88,21 +89,20 @@ class RobotController:
             coords[0] += -82
             coords[2] += 59
             #safety offset
-            coords[0] += -30
+            coords[0] += -80
             command = f"""movel({coords},vel=100, acc = 100, mod={DR_MV_MOD_REL})"""
             self._send_message(command)
-            #self.plug_in()
+            self.plug_in()
 
         return response
     
     def plug_in(self):
         #TODO: more precise
-        amp = [-50,5,0,0,0,0]
-        period = [4,0.5,0,0,0,0]
-        wait_time = 2
+        amp = [-40,5,0,0,0,0]
+        period = [6,0.5,0,0,0,0]
+        wait_time = 3
         command = f"""
-            amove_periodic({amp},
-                    period={period})
+            amove_periodic({amp},period={period})
             wait({wait_time})
             stop(DR_SSTOP)
             """
@@ -130,8 +130,10 @@ class RobotController:
         self._send_message(command)
 
     def stop(self):
-        #TODO implement
-        pass
+        command = f"""
+            stop({DR_SSTOP})
+            """
+        self._send_message(command)
         
 
     

@@ -111,6 +111,7 @@ class MessageHandler():
                     logging.WARNING,
                     f"Received message: "+message["message"]
                 )
+                #Foreign object detected - stop the robot
                 self.robot_controller.stop()
         else:
             get_logger(__name__).log(
