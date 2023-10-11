@@ -41,6 +41,7 @@ class RobotController:
         self.global_speed = speed
         self.home_positon = home_position
         self.current_position = home_position
+        self.counter = 0
 
     def reposition_eoat(self, data):
         """
@@ -69,16 +70,25 @@ class RobotController:
             )
             raise
         
-        if self.current_position == self.home_positon:
+        if self.counter == 0:# self.current_position == self.home_positon:
             #if robot is at starting location: move close to the robot and retake image
             #TODO: implement offset
-            coords[0] -= 200
-            command = f"""movel({coords},vel=100, acc=100, mod={DR_MV_MOD_REL})"""
+            self.counter +=1
+            #camera offset
+            coords[0] += -82
+            coords[2] += 59
+            #retake offset
+            coords[0] += -250
+            coords[2] += -100
+            command = f"""movel({coords},vel=300, acc=300, mod={DR_MV_MOD_REL})"""
             self._send_message(command)
-            wait(10) #wait for robot movement to finish #TODO:
             response = "retake image"
         else:
-            coords[0] -= 200
+            print("retake")
+            coords[0] += -82
+            coords[2] += 59
+            #safety offset
+            coords[0] += -30
             command = f"""movel({coords},vel=100, acc = 100, mod={DR_MV_MOD_REL})"""
             self._send_message(command)
             #self.plug_in()
@@ -118,6 +128,10 @@ class RobotController:
             move_home({DR_HOME_TARGET_USER})
             """
         self._send_message(command)
+
+    def stop(self):
+        #TODO implement
+        pass
         
 
     

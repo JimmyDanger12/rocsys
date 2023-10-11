@@ -1,6 +1,5 @@
 TO-DO:
-- RL wait for response - retake image
 - OL - make movements commands more precise
       - insert camera offset formula (if possible)
-      - any commands missing
-- test complete setup (RL + OL + RC)
+      - plug-in/plug-out commands
+      - implement yolo message handling

@@ -71,6 +71,9 @@ class Server():
             message_raw = request.get_json()
             try:
                 response = self.handle_message(message_raw)
+                get_logger(__name__).log(logging.INFO,
+                                         f"Returned response: {response}")
+                
                 if response == None:
                     return jsonify({FIELD_MESSAGE: "Docker output received successfully"}), 200
                 else:
