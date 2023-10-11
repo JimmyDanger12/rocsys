@@ -101,10 +101,21 @@ class RobotController:
         amp = [-40,5,0,0,0,0]
         period = [6,0.5,0,0,0,0]
         wait_time = 3
+        #first idea: move in a wave motion into the socket
         command = f"""
             amove_periodic({amp},period={period})
             wait({wait_time})
             stop(DR_SSTOP)
+            """
+        
+        #second idea: move with little stiffness (finds its own way)
+        stiffness = [300,300,500,50,50,50]
+        movement = [-40,0,0,0,0,0]
+        command = f"""
+            movel({movement}, vel=75, acc=100, mod={DR_MV_MOD_REL})
+            task_compliance_ctrl()
+            set_stiffness({stiffness})
+            release_compliance_ctrl()
             """
         self._send_message(command)
 
