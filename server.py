@@ -50,11 +50,12 @@ class Server():
         debug = eval(config["SERVERCONFIG", "debug"])
         route = config["SERVERCONFIG", "route"]
         home_position = config["ROBOT", "home_position"]
+        fsp = config["ROBOT", "front_socket_position"]
         global_speed = config["ROBOT", "global_speed"]
         robot_ip = config["ROBOT", "ip"]
         robot_port = config["ROBOT", "port"]
 
-        self.robot_controller = RobotController(robot_ip, robot_port, home_position, global_speed)
+        self.robot_controller = RobotController(robot_ip, robot_port, home_position, fsp, global_speed)
         self.message_handler = MessageHandler(self, self.robot_controller)
 
         @self.server.route(route, methods=["POST"])

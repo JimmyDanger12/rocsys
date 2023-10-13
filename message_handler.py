@@ -6,6 +6,7 @@ from roc_logging import get_logger
 CMD_HOME = "move_home"
 CMD_SOCKET_DET = "socket_detection"
 CMD_UNPLUG = "start_unplug"
+CMD_COLLECT_DATA = "collect_data"
 MSG_SAFETY = "safety_detection"
 MSG_CONTAINER_DOWN = "container_down"
 MSG_UNKNOWN_RESPONSE = "unknown_response"
@@ -29,6 +30,7 @@ class MessageHandler():
         self.server = server
         self.robot_controller = robot_controller
         self.robot_controller.message_handler = self
+        self.collect_data = False
         self.robot_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.robot_socket.settimeout(60)
         try:
@@ -75,6 +77,9 @@ class MessageHandler():
         
         elif command == CMD_UNPLUG:
             self.robot_controller.plug_out()
+
+        elif command == CMD_COLLECT_DATA:
+            response = self.robot_controller.collect_data()
         
         else:
             get_logger(__name__).log(
@@ -90,7 +95,6 @@ class MessageHandler():
     
     def handle_message(self, content, message):
         if content == MSG_CONTAINER_DOWN:
-            #TODO: what to do when container is down?
             get_logger(__name__).log(
                 logging.WARNING,
                 f"{message}"
@@ -127,6 +131,13 @@ class MessageHandler():
 
         current_robot_pos = eval(self.robot_socket.recv(1024).decode())
         self.robot_controller.current_position = current_robot_pos[0]
+        if "move_home" in message and self.robot_controller.initial_home:
+            self.robot_controller.home_positon = current_robot_pos[0]
+            get_logger(__name__).log(logging.INFO,
+                                     f"Received and updated new robot home pos {self.robot_controller.home_positon}")
+            self.robot_controller.initial_home = False
+        if self.collect_data:
+            response = current_robot_pos[0]
         get_logger(__name__).log(logging.INFO,
                                  f"Received and updated new robot pos {self.robot_controller.current_position}")
         

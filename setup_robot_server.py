@@ -1,8 +1,9 @@
 from DRCF import *
 import socket
+import threading
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(('0.0.0.0', 6969))  # Replace with appropriate IP and port
+server_socket.bind(('0.0.0.0', 7005))  # Replace with appropriate IP and port
 server_socket.listen(1)
 
 print('Server listening for connections...')
@@ -24,7 +25,7 @@ while True:
             
             # Execute the DRL command on the robot
             exec(command)
-            wait(0.5)
+            wait(1)
 
             current_pos = str(get_current_posx())
             # Send "received" message back to the client
