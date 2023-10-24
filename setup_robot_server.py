@@ -24,7 +24,7 @@ while True:
             
             # Execute the DRL command on the robot
             exec(command)
-            wait(1)
+            wait(0.5)
 
             current_pos = str(get_current_posx())
             # Send "received" message back to the client

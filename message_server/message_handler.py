@@ -92,7 +92,7 @@ class MessageHandler():
         
         get_logger(__name__).log(
             logging.INFO,
-            f"Executing {command} finished"
+            f"Executing command {command} finished"
         )
         return response
     
@@ -106,17 +106,17 @@ class MessageHandler():
             if "result" not in message:
                 get_logger(__name__).log(
                     logging.WARNING,
-                    f"Received message: {message}"
+                    f"Unknown result from safety-system: {message}"
                 )
             if message["result"] == RES_START or message["result"] == RES_END:
                 get_logger(__name__).log(
                     logging.INFO,
-                    "Received message: "+ message["message"]
+                    "Safety-system: "+ message["message"]
                 )
             elif message["result"] == RES_FOREIGN:
                 get_logger(__name__).log(
                     logging.WARNING,
-                    f"Received message: "+message["message"]
+                    f"Safety-system: "+message["message"]
                 )
                 #Foreign object detected - stop the robot
                 self.robot_controller.stop()
@@ -129,19 +129,19 @@ class MessageHandler():
     def send_message(self, message=str):
         response = None
         get_logger(__name__).log(logging.INFO,
-            f"Sent command {message} to socket")
+            f"Sent command {message} to robot socket")
         self.robot_socket.sendall(message.encode())
 
         current_robot_pos = eval(self.robot_socket.recv(1024).decode())
         self.robot_controller.current_position = current_robot_pos[0]
         if "move_home" in message and self.robot_controller.initial_home:
-            self.robot_controller.home_positon = current_robot_pos[0]
+            self.robot_controller.home_position = current_robot_pos[0]
             get_logger(__name__).log(logging.INFO,
-                                     f"Received and updated new robot home pos {self.robot_controller.home_positon}")
+                                     f"Received and updated new robot home pos {self.robot_controller.home_position}")
             self.robot_controller.initial_home = False
         if self.collect_data:
             response = current_robot_pos[0]
         get_logger(__name__).log(logging.INFO,
-                                 f"Received and updated new robot pos {self.robot_controller.current_position}")
+                                 f"Received and updated current robot pos {self.robot_controller.current_position}")
         
         return response

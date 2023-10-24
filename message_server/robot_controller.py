@@ -55,7 +55,7 @@ class RobotController:
         self.port = port
         self.accurate_detection = accurate_detection
         self.log_detection = log_detection
-        self.home_positon = home_position
+        self.home_position = home_position
         self.fsp = front_socket_postion
         self.current_position = home_position
 
@@ -88,7 +88,7 @@ class RobotController:
             )
             raise
         
-        if is_within(self.current_position,self.home_positon,0.005):
+        if is_within(self.current_position,self.home_position,0.005):
             #if robot is at starting location: move close to the robot and retake image
             get_logger(__name__).log(logging.INFO,
                                      "Executing first movement command")
@@ -122,7 +122,7 @@ class RobotController:
 
             self._send_message(command)
             #TODO: change plug_in to await RL signal (for async) as response to second movement
-            self.plug_in()
+            #self.plug_in()
 
         return response
     
@@ -160,9 +160,8 @@ class RobotController:
         """
         if self.initial_home:
             command = f"""move_home({DR_HOME_TARGET_USER})"""
-            self.initial_home = False
         else:
-            command = f"""amovel({self.home_positon},vel=300,acc=300,mod={DR_MV_MOD_ABS},ref={DR_BASE})"""
+            command = f"""amovel({self.home_position},vel=300,acc=300,mod={DR_MV_MOD_ABS},ref={DR_BASE})"""
         self.safety_stop = False    
 
         self._send_message(command)

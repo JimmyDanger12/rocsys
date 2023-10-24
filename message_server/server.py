@@ -50,8 +50,8 @@ class Server():
         debug = eval(config["SERVERCONFIG", "debug"])
         route = config["SERVERCONFIG", "route"]
 
-        home_position = config["ROBOT", "home_position"]
-        fsp = config["ROBOT", "front_socket_position"]
+        home_position = eval(config["ROBOT", "home_position"])
+        fsp = eval(config["ROBOT", "front_socket_position"])
         robot_ip = config["ROBOT", "ip"]
         robot_port = config["ROBOT", "port"]
         detection_acc = eval(config["ROBOT", "accurate_detection"])
