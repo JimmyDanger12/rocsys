@@ -5,8 +5,8 @@ This script will start the server
 By default the server is located at localhost on port 4444.
 """
 
-from server import Server
-from globalconfig import GlobalConfig
+from message_server.server import Server
+from message_server.globalconfig import GlobalConfig
 
 DEFAULT_CONFIG_PATH = "config.ini"
 

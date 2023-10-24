@@ -1,9 +1,0 @@
-{
-    "message_type": "cmd",
-    "content": "socket_detection",
-    "data": {
-        "result": 1,
-        "unit": "m/rad", 
-        "coords": [0.3873,0.0356,0.0388,-0.0201,0.4124,0.2328]
-    }
-}

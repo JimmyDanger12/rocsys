@@ -1,13 +1,12 @@
 from DRCF import *
 import socket
-import threading
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(('0.0.0.0', 7005))  # Replace with appropriate IP and port
 server_socket.listen(1)
 
 print('Server listening for connections...')
-server_socket.settimeout(60)  # Set initial timeout to 60 seconds
+server_socket.settimeout(120)  # Set initial timeout to x seconds
 
 change_operation_speed(50)      
 
