@@ -51,14 +51,19 @@ class Server():
         route = config["SERVERCONFIG", "route"]
 
         home_position = eval(config["ROBOT", "home_position"])
-        fsp = eval(config["ROBOT", "front_socket_position"])
         robot_ip = config["ROBOT", "ip"]
         robot_port = config["ROBOT", "port"]
         detection_acc = eval(config["ROBOT", "accurate_detection"])
         log_detection = eval(config["ROBOT","log_detection"])
 
-        self.robot_controller = RobotController(robot_ip, robot_port, home_position, fsp, detection_acc, log_detection)
+        self.robot_controller = RobotController(robot_ip, robot_port, home_position, detection_acc, log_detection)
         self.message_handler = MessageHandler(self, self.robot_controller)
+
+        #set fsp:
+        fsp_def = eval(config["ROBOT", "front_socket_position_def"])
+        fsp_vert = eval(config["ROBOT", "front_socket_postition_vert"])
+        self.robot_controller.fsp_def = fsp_def
+        self.robot_controller.fsp_vert = fsp_vert
 
         @self.server.route(route, methods=["POST"])
         def receive_docker_output():

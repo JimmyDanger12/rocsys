@@ -53,47 +53,53 @@ class MessageHandler():
             data (dict)
         """
         response = None
-        get_logger(__name__).log(
+        
+        if command == CMD_HOME or not self.robot_controller.safety_stop:
+            get_logger(__name__).log(
             logging.INFO,
             f"Executing command {command} starting"
-        )
-        if command == CMD_HOME:
-            self.robot_controller.move_home()          
-        
-        elif command == CMD_SOCKET_DET:
-            if data["result"] == RES_SUCCESS:
-                try:
-                    unit = data["unit"]
-                except KeyError:
-                    raise Exception("'Unit' not in data")
-                try:
-                    coords = data["coords"]
-                except KeyError:
-                    raise Exception("'Coords' not in data")
-                response = self.robot_controller.socket_detection(unit, coords)
+            )
+            if command == CMD_HOME:
+                self.robot_controller.move_home(True)          
+            elif command == CMD_SOCKET_DET:
+                if data["result"] == RES_SUCCESS:
+                    try:
+                        unit = data["unit"]
+                    except KeyError:
+                        raise Exception("'Unit' not in data")
+                    try:
+                        coords = data["coords"]
+                    except KeyError:
+                        raise Exception("'Coords' not in data")
+                    response = self.robot_controller.socket_detection(unit, coords)
+                
+                elif data["result"] == RES_FAIL or data["result"] == RES_UNRELIABLE:
+                    self.robot_controller.reposition_eoat(data)
             
-            elif data["result"] == RES_FAIL or data["result"] == RES_UNRELIABLE:
-                self.robot_controller.reposition_eoat(data)
-        
-        elif command == CMD_PLUG_IN:
-            self.robot_controller.plug_in()
-        
-        elif command == CMD_UNPLUG:
-            self.robot_controller.plug_out()
+            elif command == CMD_PLUG_IN:
+                self.robot_controller.plug_in()
+            
+            elif command == CMD_UNPLUG:
+                self.robot_controller.plug_out()
 
-        elif command == CMD_COLLECT_DATA: #optional command
-            response = self.robot_controller.collect_data()
-        
+            elif command == CMD_COLLECT_DATA: #optional command
+                response = self.robot_controller.collect_data()
+            
+            else:
+                get_logger(__name__).log(
+                    logging.WARNING,
+                    f"Unknown robot command"
+                )
+            
+            get_logger(__name__).log(
+                logging.INFO,
+                f"Executing command {command} finished"
+            )
         else:
             get_logger(__name__).log(
                 logging.WARNING,
-                f"Unknown robot command"
+                f"No execution of command {command} due to safety stop"
             )
-        
-        get_logger(__name__).log(
-            logging.INFO,
-            f"Executing command {command} finished"
-        )
         return response
     
     def handle_message(self, content, message):
@@ -132,15 +138,23 @@ class MessageHandler():
             f"Sent command {message} to robot socket")
         self.robot_socket.sendall(message.encode())
 
-        current_robot_pos = eval(self.robot_socket.recv(1024).decode())
-        self.robot_controller.current_position = current_robot_pos[0]
+        robot_information = eval(self.robot_socket.recv(1024).decode())
+        current_robot_pos = eval(robot_information["current_pos"])[0]
+        joint_torque = robot_information["joint_torque"]
+        ext_torque = robot_information["external_torque"]
+        tool_force = robot_information["tool_force"]
+
+        self.robot_controller.current_position = current_robot_pos
         if "move_home" in message and self.robot_controller.initial_home:
-            self.robot_controller.home_position = current_robot_pos[0]
+            self.robot_controller.home_position = current_robot_pos
             get_logger(__name__).log(logging.INFO,
                                      f"Received and updated new robot home pos {self.robot_controller.home_position}")
             self.robot_controller.initial_home = False
+        print("JT",joint_torque)
+        print("ET",ext_torque)
+        print("TF",tool_force)
         if self.collect_data:
-            response = current_robot_pos[0]
+            response = current_robot_pos
         get_logger(__name__).log(logging.INFO,
                                  f"Received and updated current robot pos {self.robot_controller.current_position}")
         

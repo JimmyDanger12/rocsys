@@ -5,6 +5,7 @@ import logging
 # if Doosan Robot Control Functions import does not work: read global variables
 from DRCF import *
 
+FSP_POS = 0
 
 MSG_SUCCESS = "successful socket detection"
 MSG_NO_SUCCESS = "no/unreliable detection"
@@ -49,14 +50,13 @@ class RobotController:
     This includes calculations and translations.
     """
 
-    def __init__(self, ip, port, home_position, front_socket_postion, accurate_detection, log_detection):
+    def __init__(self, ip, port, home_position, accurate_detection, log_detection):
         self.message_handler = None
         self.ip = ip
         self.port = port
         self.accurate_detection = accurate_detection
         self.log_detection = log_detection
         self.home_position = home_position
-        self.fsp = front_socket_postion
         self.current_position = home_position
 
         self.initial_home = True
@@ -88,7 +88,7 @@ class RobotController:
             )
             raise
         
-        if is_within(self.current_position,self.home_position,0.005):
+        if is_within(self.current_position,self.home_position,0.01):
             #if robot is at starting location: move close to the robot and retake image
             get_logger(__name__).log(logging.INFO,
                                      "Executing first movement command")
@@ -102,7 +102,7 @@ class RobotController:
             #response = "first movement"
             response = "retake image"
 
-        elif self.safety_stop == False: #if safety stop is active - ignore plug-in command
+        else: #if safety stop is active - ignore plug-in command
             get_logger(__name__).log(logging.INFO,
                                      "Executing second movement command")
             #return response
@@ -112,23 +112,24 @@ class RobotController:
             if self.accurate_detection:
                 mod = DR_MV_MOD_REL
             else:
-                coords = self.fsp
+                if FSP_POS == 0:
+                    coords = self.fsp_def
+                elif FSP_POS == 1:
+                    coords = self.fsp_vert
                 mod = DR_MV_MOD_ABS
             
             #TODO: implement async move - add delay in RL response
-            command = f"""movel({coords},vel=100, acc = 100, mod={mod})"""
+            command = f"""amovel({coords},vel=100, acc = 100, mod={mod})"""
             #response = "second_movement"
             response = "in position"
 
             self._send_message(command)
-            #TODO: change plug_in to await RL signal (for async) as response to second movement
-            #self.plug_in()
 
         return response
     
     def plug_in(self):
         #TODO: force control?
-        amp = [-47,1.25,0,0,0,0]
+        amp = [-49,1.25,0,0,0,0]
         period = [10,0.25,0,0,0,0]
         wait_time = 10
 
@@ -144,24 +145,24 @@ class RobotController:
         else:
             #second idea: move with little stiffness (finds its own way)
             #TODO: set_force_factor
-            stiffness = [3000,3000,3000,200,200,200] #default: [3000, 3000, 3000, 200, 200, 200]
-            movement = [-47,0,0,0,0,0] 
+            stiffness = [3000,6000,20000,5000,5000,5000] #default: [3000, 3000, 3000, 200, 200, 200]
+            movement = [-49,0,0,0,0,0]
             command = f"""task_compliance_ctrl({stiffness})"""
             self._send_message(command)
-            command = f"""move-l({movement}, vel=75, acc=100, ref={DR_TOOL}, mod={DR_MV_MOD_REL})"""
+            command = f"""movel({movement}, vel=75, acc=100, ref={DR_TOOL}, mod={DR_MV_MOD_REL})"""
             self._send_message(command)
             command = f"""release_compliance_ctrl()"""
             self._send_message(command)
 
 
-    def move_home(self):
+    def move_home(self,interrupt=False):
         """
         Moves the robot to the home position (set in config)
         """
-        if self.initial_home:
+        if interrupt:
             command = f"""move_home({DR_HOME_TARGET_USER})"""
         else:
-            command = f"""amovel({self.home_position},vel=300,acc=300,mod={DR_MV_MOD_ABS},ref={DR_BASE})"""
+            command = f"""amovel({self.home_position},vel=300,acc=300)"""
         self.safety_stop = False    
 
         self._send_message(command)
@@ -174,7 +175,7 @@ class RobotController:
         movement = [60,0,0,0,0,0]
         command = f"""movel({movement}, vel=50, acc=50, ref={DR_TOOL}, mod={DR_MV_MOD_REL})"""
         self._send_message(command)
-        self.move_home()
+        self.move_home(True)
 
     def stop(self):
         command = f"""stop({DR_SSTOP})"""

@@ -2,7 +2,7 @@ from DRCF import *
 import socket
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(('0.0.0.0', 7005))  # Replace with appropriate IP and port
+server_socket.bind(('0.0.0.0', 7006))  # Replace with appropriate IP and port
 server_socket.listen(1)
 
 print('Server listening for connections...')
@@ -24,11 +24,21 @@ while True:
             
             # Execute the DRL command on the robot
             exec(command)
-            wait(0.5)
+            wait(1)
 
             current_pos = str(get_current_posx())
+            joint_torque = str(get_joint_torque())
+            ext_torque = str(get_external_torque())
+            tool_force = str(get_tool_force(DR_TOOL))
+
+            robot_information = {
+                "current_pos": current_pos,
+                "joint_torque": joint_torque,
+                "external_torque": ext_torque,
+                "tool_force": tool_force
+            }
             # Send "received" message back to the client
-            client_socket.sendall(current_pos.encode("utf-8"))
+            client_socket.sendall(str(robot_information).encode("utf-8"))
 
     except socket.timeout:
         # Handle timeout exception, meaning no new messages received for 60 seconds
