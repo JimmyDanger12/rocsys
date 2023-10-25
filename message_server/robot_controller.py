@@ -1,9 +1,17 @@
 import math
+import numpy as np
 from message_server.roc_logging import get_logger
 import logging
 
-# if Doosan Robot Control Functions import does not work: read global variables
+# if Doosan Robot Control Functions import does not work: read global below variables
 from DRCF import *
+"""
+DR_MV_MOD_ABS = 0
+DR_MV_MOD_REL = 1
+DR_TOOL = 1
+DR_SSTOP = 2
+DR_HOME_TARGET_USER = 1
+"""
 
 FSP_POS = 0
 
@@ -35,10 +43,8 @@ def convert_coords(unit, coords):
         converted_coords = coords
     return converted_coords
 
-def apply_camera_offset(coords):
-    coords[0] += CAMERA_OS_X
-    coords[1] += CAMERA_OS_Y
-    coords[2] += CAMERA_OS_Z
+def apply_camera_offset(coords,camera_os):
+    coords = np.array(coords)+np.array(camera_os)
     return coords
 
 def is_within(list1:list,list2:list,value:int):
@@ -50,10 +56,11 @@ class RobotController:
     This includes calculations and translations.
     """
 
-    def __init__(self, ip, port, home_position, accurate_detection, log_detection):
+    def __init__(self, ip, port, home_position, camera_os, accurate_detection, log_detection):
         self.message_handler = None
         self.ip = ip
         self.port = port
+        self.camera_os = camera_os
         self.accurate_detection = accurate_detection
         self.log_detection = log_detection
         self.home_position = home_position
@@ -93,20 +100,18 @@ class RobotController:
             get_logger(__name__).log(logging.INFO,
                                      "Executing first movement command")
             #camera offset
-            coords = apply_camera_offset(coords)
+            coords = apply_camera_offset(coords,self.camera_os)
             #retake offset
             coords[0] += -250
             coords[2] += -100
             command = f"""amovel({coords},vel=300, acc=300, mod={DR_MV_MOD_REL})"""
             self._send_message(command)
-            #response = "first movement"
             response = "retake image"
 
         else: #if safety stop is active - ignore plug-in command
             get_logger(__name__).log(logging.INFO,
                                      "Executing second movement command")
-            #return response
-            coords = apply_camera_offset(coords)
+            coords = apply_camera_offset(coords,self.camera_os)
             #safety offset
             coords[0] += -80
             if self.accurate_detection:
@@ -118,9 +123,7 @@ class RobotController:
                     coords = self.fsp_vert
                 mod = DR_MV_MOD_ABS
             
-            #TODO: implement async move - add delay in RL response
             command = f"""amovel({coords},vel=100, acc = 100, mod={mod})"""
-            #response = "second_movement"
             response = "in position"
 
             self._send_message(command)

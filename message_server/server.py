@@ -55,8 +55,9 @@ class Server():
         robot_port = config["ROBOT", "port"]
         detection_acc = eval(config["ROBOT", "accurate_detection"])
         log_detection = eval(config["ROBOT","log_detection"])
+        camera_os = eval(config["CAMERA","os"])
 
-        self.robot_controller = RobotController(robot_ip, robot_port, home_position, detection_acc, log_detection)
+        self.robot_controller = RobotController(robot_ip, robot_port, home_position, camera_os, detection_acc, log_detection)
         self.message_handler = MessageHandler(self, self.robot_controller)
 
         #set fsp:
