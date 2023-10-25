@@ -43,11 +43,32 @@ def convert_coords(unit, coords):
         converted_coords = coords
     return converted_coords
 
-def apply_camera_offset(coords,camera_os):
+def apply_camera_offset(coords:list,camera_os:list):
+    """
+    apply camera offset to coordinates,
+    offset is set in config
+
+    Args:
+        coords (list): original coords
+        camera_os (list): camera offset
+
+    Returns:
+        list: updated coords
+    """
     coords = np.array(coords)+np.array(camera_os)
     return coords
 
 def is_within(list1:list,list2:list,value:int):
+    """_summary_
+
+    Args:
+        list1 (list): first list
+        list2 (list): second list
+        value (int): limit
+
+    Returns:
+        bool: True if all values are within the limit
+    """
     return all(abs((1-value) * x) <= abs(y) <= abs((1+value) * x) for x, y in zip(list2, list1))
 
 class RobotController:
@@ -80,7 +101,7 @@ class RobotController:
 
     def socket_detection(self, unit, coords):
         """
-        Moves the robot to the coordinates
+        Moves the robot to the specified coordinates
 
         Args:
             unit (str): 'm/rad','mm/deg'
@@ -131,6 +152,10 @@ class RobotController:
         return response
     
     def plug_in(self):
+        """
+        This command initiates the plugging-in of the plug into the socket
+        Options for force control or 'wiggle' are available
+        """
         #TODO: force control?
         amp = [-49,1.25,0,0,0,0]
         period = [10,0.25,0,0,0,0]
@@ -181,6 +206,10 @@ class RobotController:
         self.move_home(True)
 
     def stop(self):
+        """
+        Send soft stop command to robot (safety interrupt) to 
+        interrupt current movement command
+        """
         command = f"""stop({DR_SSTOP})"""
         self.safety_stop = True
         self._send_message(command)
@@ -196,5 +225,8 @@ class RobotController:
         return result
     
     def _send_message(self, command):
+        """
+        Relegates message to message handler
+        """
         message = str(command)
         return self.message_handler.send_message(message)
