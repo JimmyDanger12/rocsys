@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_socketio import SocketIO, emit
 import logging
 from message_server.globalconfig import GlobalConfig
 from message_server.roc_logging import setup_logging, get_logger
@@ -13,17 +14,20 @@ FIELD_ERROR = "error"
 FIELD_RESPONSE = "response"
 CMD = "cmd"
 MSG = "msg"
+TGT_ROBOT = "message_robot"
+TGT_INPUT = "message_input"
+TGT_SAFETY = "message_safety"
+TGT_ALL = "message_all"
 
 class Server():
     """
     This class implements a Flask server used to send/receive
-    messages from the ROCSYS bash script and starts the message and command handling.
-
-    
+    messages from the ROCSYS bash script and starts the message and command handling.    
     """
 
     def __init__(self):
         self.server = None
+        self.socketio = None
         self.robot_controller = None
         self.message_handler = None
 
@@ -44,30 +48,28 @@ class Server():
         )
         
         self.server = Flask(__name__)
+        self.socketio = SocketIO(self.server)
 
         host = config["SERVERCONFIG", "host"]
         port = config["SERVERCONFIG", "port"]
         debug = eval(config["SERVERCONFIG", "debug"])
-        route = config["SERVERCONFIG", "route"]
 
-        home_position = eval(config["ROBOT", "home_position"])
         robot_ip = config["ROBOT", "ip"]
         robot_port = config["ROBOT", "port"]
+        home_position = eval(config["ROBOT", "home_position"])
         detection_acc = eval(config["ROBOT", "accurate_detection"])
-        log_detection = eval(config["ROBOT","log_detection"])
+
         camera_os = eval(config["CAMERA","os"])
 
-        self.robot_controller = RobotController(robot_ip, robot_port, home_position, camera_os, detection_acc, log_detection)
+        self.robot_controller = RobotController(robot_ip, robot_port, home_position, camera_os, detection_acc)
         self.message_handler = MessageHandler(self, self.robot_controller)
 
-        #set fsp:
-        fsp_def = eval(config["ROBOT", "front_socket_position_def"])
-        fsp_vert = eval(config["ROBOT", "front_socket_postition_vert"])
-        self.robot_controller.fsp_def = fsp_def
-        self.robot_controller.fsp_vert = fsp_vert
-
-        @self.server.route(route, methods=["POST"])
-        def receive_docker_output():
+        if detection_acc == False:
+            robot_fsps = eval(config["ROBOT","front_socket_positions"])
+            self.robot_controller.fsp_list = robot_fsps
+        
+        @self.socketio.on("message_output")
+        def receive_message(message):
             """
             This is the default route for the Flask server 
             to listen to messages from the docker output
@@ -77,22 +79,27 @@ class Server():
             """
             response = None
 
-            message_raw = request.get_json()
+            message_raw = eval(message)
             try:
-                response = self.handle_message(message_raw)
-                get_logger(__name__).log(logging.INFO,
-                                         f"Returned response: {response}")
-                
-                if response == None:
-                    return jsonify({FIELD_MESSAGE: "Docker output received successfully"}), 200
-                else:
-                    return jsonify({FIELD_MESSAGE: "Docker output received successfully", FIELD_RESPONSE: response}), 200
+                self.handle_message(message_raw)
             except Exception as e:
                 get_logger(__name__).error(e)
-                return jsonify({FIELD_ERROR: str(e)}), 500
+                self.send_message(TGT_ALL,{FIELD_ERROR:str(e)})
+        
+        @self.socketio.on("connect")
+        def handle_connect():
+            client_ip = request.environ["REMOTE_ADDR"]
+            get_logger(__name__).log(logging.INFO,
+                                     f"Client connected from IP: {client_ip}")
+        
+        @self.socketio.on("disconnect")
+        def handle_disconnect():
+            client_ip = request.environ["REMOTE_ADDR"]
+            get_logger(__name__).log(logging.INFO,
+                                     f"Client disconnected from IP: {client_ip}")
         
         try:
-            self.server.run(host=host, port=port, debug=debug)
+            self.socketio.run(self.server, host=host, port=port, debug=debug)
             
         except Exception as e:
             get_logger(__name__).error(e)
@@ -116,7 +123,6 @@ class Server():
                 data (dict)
             }
         """
-        response = None
         missing_keys = {FIELD_MESSAGE_TYPE, FIELD_CONTENT, FIELD_DATA}.difference(message.keys())
         
         if missing_keys:
@@ -132,14 +138,18 @@ class Server():
         )
 
         if message_type == CMD:
-            response = self.message_handler.handle_command(content, data)
+            self.message_handler.handle_command(content, data)
         elif message_type == MSG:
-            response = self.message_handler.handle_message(content, data)
+            self.message_handler.handle_message(content, data)
         else:
             get_logger(__name__).log(
                 logging.ERROR,
                 f"Unknown message type"
             )
             raise
-            
-        return response
+    
+    def send_message(self,client,message):
+        self.socketio.emit(client,message)
+
+        get_logger(__name__).log(logging.INFO,
+                                 f"Sent message {message} to client {client}")

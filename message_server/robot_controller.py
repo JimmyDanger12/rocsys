@@ -13,8 +13,6 @@ DR_SSTOP = 2
 DR_HOME_TARGET_USER = 1
 """
 
-FSP_POS = 0
-
 MSG_SUCCESS = "successful socket detection"
 MSG_NO_SUCCESS = "no/unreliable detection"
 MSG_HOME = "home position"
@@ -23,6 +21,11 @@ COORD_DEG = 'mm/deg'
 CAMERA_OS_X = -82
 CAMERA_OS_Y = -6
 CAMERA_OS_Z = 55.5
+TGT_ROBOT = "message_robot"
+TGT_INPUT = "message_input"
+TGT_SAFETY = "message_safety"
+TGT_ALL = "message_all"
+TGT_TAKE_IMAGE = "take_image"
 
 def convert_coords(unit, coords):
     """
@@ -55,7 +58,7 @@ def apply_camera_offset(coords:list,camera_os:list):
     Returns:
         list: updated coords
     """
-    coords = np.array(coords)+np.array(camera_os)
+    coords = list(np.array(coords)+np.array(camera_os))
     return coords
 
 def is_within(list1:list,list2:list,value:int):
@@ -77,37 +80,39 @@ class RobotController:
     This includes calculations and translations.
     """
 
-    def __init__(self, ip, port, home_position, camera_os, accurate_detection, log_detection):
+    def __init__(self, ip, port, home_position, camera_os, accurate_detection):
+        #server/messaging vars
         self.message_handler = None
         self.ip = ip
         self.port = port
+
+        #robot vars
         self.camera_os = camera_os
-        self.accurate_detection = accurate_detection
-        self.log_detection = log_detection
         self.home_position = home_position
         self.current_position = home_position
+        self.front_socket_position = None
 
+        #vars for various purposes
         self.initial_home = True
         self.safety_stop = False
-
-    def reposition_eoat(self, data):
-        """
-        Repositions EOAT to another position to retake picture
-
-        Args:
-            data (_type_): _description_
-        """
-        pass
+        
+        #vars for not accurate detection
+        self.accurate_detection = accurate_detection
+        self.fsp_list = None
 
     def socket_detection(self, unit, coords):
         """
-        Moves the robot to the specified coordinates
+        Socket detection logic:
+        - take image:
+         - move to coordinates which are close to detection (for closer/better second detection)
+        - take second image:
+         - move directly to detection (if accurate detection)
+         - move to specified coords depending on provided (hard-coded) fsp
 
         Args:
             unit (str): 'm/rad','mm/deg'
             coords (list): [x,y,z,rx,ry,rz]
         """
-        response = None
         coords = convert_coords(unit, coords)
         if all([x == 0 for x in coords]):
             get_logger(__name__).log(
@@ -119,37 +124,38 @@ class RobotController:
         if is_within(self.current_position,self.home_position,0.01):
             #if robot is at starting location: move close to the robot and retake image
             get_logger(__name__).log(logging.INFO,
-                                     "Executing first movement command")
+                                     "Executing first detection movement command")
+            
             #camera offset
             coords = apply_camera_offset(coords,self.camera_os)
             #retake offset
-            coords[0] += -250
-            coords[2] += -100
+            coords[0] += -320
+            coords[2] += -70
+            coords[4] = coords[4]/2
             command = f"""amovel({coords},vel=300, acc=300, mod={DR_MV_MOD_REL})"""
-            self._send_message(command)
-            response = "retake image"
+            self._send_message(TGT_ROBOT,command)
+            self._send_message(TGT_TAKE_IMAGE,"retake image")
 
-        else: #if safety stop is active - ignore plug-in command
+        else:
             get_logger(__name__).log(logging.INFO,
-                                     "Executing second movement command")
+                                     "Executing second detection movement command")
+            
             coords = apply_camera_offset(coords,self.camera_os)
-            #safety offset
-            coords[0] += -80
-            if self.accurate_detection:
-                mod = DR_MV_MOD_REL
-            else:
-                if FSP_POS == 0:
-                    coords = self.fsp_def
-                elif FSP_POS == 1:
-                    coords = self.fsp_vert
+            #coords[0] += -80 #safety offset TODO: remove
+            mod = DR_MV_MOD_REL
+
+            if not self.accurate_detection and self.fsp_list: #only when socket detection is not accurate enough
                 mod = DR_MV_MOD_ABS
+                coords = self.front_socket_position
+                
+                get_logger(__name__).log(
+                        logging.INFO,
+                        f"Targeting fsp {coords}"
+                    )
             
             command = f"""amovel({coords},vel=100, acc = 100, mod={mod})"""
-            response = "in position"
-
-            self._send_message(command)
-
-        return response
+            self._send_message(TGT_ROBOT,command)
+            self._send_message(TGT_TAKE_IMAGE,"in position")
     
     def plug_in(self):
         """
@@ -165,35 +171,34 @@ class RobotController:
         if wave:
             #first idea: move in a wave motion into the socket
             command = f"""amove_periodic({amp},period={period})"""
-            self._send_message(command)
+            self._send_message(TGT_ROBOT,command)
             command = f"""wait({wait_time})"""
-            self._send_message(command)
+            self._send_message(TGT_ROBOT,command)
             command = f"""stop({DR_SSTOP})"""
-            self._send_message(command)
+            self._send_message(TGT_ROBOT,command)
         else:
             #second idea: move with little stiffness (finds its own way)
-            #TODO: set_force_factor
             stiffness = [3000,6000,20000,5000,5000,5000] #default: [3000, 3000, 3000, 200, 200, 200]
             movement = [-49,0,0,0,0,0]
             command = f"""task_compliance_ctrl({stiffness})"""
-            self._send_message(command)
+            self._send_message(TGT_ROBOT,command)
             command = f"""movel({movement}, vel=75, acc=100, ref={DR_TOOL}, mod={DR_MV_MOD_REL})"""
-            self._send_message(command)
+            self._send_message(TGT_ROBOT,command)
             command = f"""release_compliance_ctrl()"""
-            self._send_message(command)
-
+            self._send_message(TGT_ROBOT,command)
+        self._send_message(TGT_INPUT,"plug_in_done")
 
     def move_home(self,interrupt=False):
         """
         Moves the robot to the home position (set in config)
         """
-        if interrupt:
+        if not interrupt:
             command = f"""move_home({DR_HOME_TARGET_USER})"""
         else:
             command = f"""amovel({self.home_position},vel=300,acc=300)"""
         self.safety_stop = False    
 
-        self._send_message(command)
+        self._send_message(TGT_ROBOT,command)
 
     def plug_out(self):
         """
@@ -202,8 +207,9 @@ class RobotController:
         """
         movement = [60,0,0,0,0,0]
         command = f"""movel({movement}, vel=50, acc=50, ref={DR_TOOL}, mod={DR_MV_MOD_REL})"""
-        self._send_message(command)
+        self._send_message(TGT_ROBOT,command)
         self.move_home(True)
+        self._send_message(TGT_INPUT,"plug_out_done")
 
     def stop(self):
         """
@@ -212,21 +218,30 @@ class RobotController:
         """
         command = f"""stop({DR_SSTOP})"""
         self.safety_stop = True
-        self._send_message(command)
+        self._send_message(TGT_ROBOT,command)
+        self._send_message(TGT_ALL,"safety_stop_response")
         
     def collect_data(self):
         """
         currently: data will be safed on RL - rewrite if saved on OL
         """
-        movement = [0,0,-1,0,0,0]
+        movement = [-1,0,0,0,0,0]
         self.message_handler.collect_data = True
         command = f"""movel({movement},vel=100,acc=100,ref={DR_TOOL},mod={DR_MV_MOD_REL})"""
-        result = self._send_message(command)
-        return result
+        self._send_message(TGT_ROBOT,command)
     
-    def _send_message(self, command):
+    def reposition_eoat(self, data): #not implemented
+        """
+        Repositions EOAT to another position to retake picture
+
+        Args:
+            data (_type_): _description_
+        """
+        pass
+    
+    def _send_message(self, target,command):
         """
         Relegates message to message handler
         """
         message = str(command)
-        return self.message_handler.send_message(message)
+        return self.message_handler.send_message(target,message)
