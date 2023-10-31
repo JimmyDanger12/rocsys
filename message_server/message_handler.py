@@ -59,8 +59,8 @@ class MessageHandler():
             data (dict)
         """
         response = None
-        
-        if command == CMD_RESET_PLUG_IN or not self.robot_controller.safety_stop:
+
+        if command == CMD_RESET_PLUG_IN or command == CMD_UNPLUG or not self.robot_controller.safety_stop:
             get_logger(__name__).log(
             logging.INFO,
             f"Executing command {command} starting"
@@ -92,6 +92,7 @@ class MessageHandler():
             
             elif command == CMD_UNPLUG:
                 self.robot_controller.plug_out()
+                self.send_message(TGT_SAFETY,"start_detection")
 
             elif command == CMD_COLLECT_DATA: #optional command
                 response = self.robot_controller.collect_data()

@@ -53,7 +53,7 @@ class PlugInCommand():
         self.target = target
         self.sio = sio
         
-        sio.on("take_image",self.handle_response)
+        self.sio.on("take_image",self.handle_response)
     
     def handle_response(self,msg):
         print(msg)
@@ -171,7 +171,7 @@ class PlugOutCommand():
         
         return output
 
-class CollectDataCommand():
+class CollectDataCommand(): #Currently unused
     def __init__(self, url):
         self.flask_url = url
         self.amount = 150
@@ -188,8 +188,8 @@ class CollectDataCommand():
             FIELD_DATA: data
         }
         for i in range(self.amount):
-            response = send_message(self.flask_url, output)
-            robot_coords = response["response"]
+            response =  self.sio.emit("take_image", output)
+            robot_coords = response
         
             results, coord_list = self.take_image(self.amount)
             image_coords = convert_coords(coord_list[0])
@@ -198,8 +198,6 @@ class CollectDataCommand():
                 writer = csv.writer(file)
                 total_coords=robot_coords+image_coords
                 writer.writerow(total_coords)
-        
-        return response
         
     
     def take_image(self, amount):

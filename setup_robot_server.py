@@ -2,7 +2,7 @@ from DRCF import *
 import socket
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(('0.0.0.0', 7007))  # Replace with appropriate IP and port
+server_socket.bind(('0.0.0.0', 7008))  # Replace with appropriate IP and port
 server_socket.listen(1)
 
 print('Server listening for connections...')

@@ -163,7 +163,7 @@ class RobotController:
         Options for force control or 'wiggle' are available
         """
         #TODO: force control?
-        amp = [-49,1.25,0,0,0,0]
+        amp = [-50,1.25,0,0,0,0]
         period = [10,0.25,0,0,0,0]
         wait_time = 10
 
@@ -186,7 +186,7 @@ class RobotController:
             self._send_message(TGT_ROBOT,command)
             command = f"""release_compliance_ctrl()"""
             self._send_message(TGT_ROBOT,command)
-        self._send_message(TGT_INPUT,"plug_in_done")
+        self._send_message(TGT_INPUT,"plug_in_complete")
 
     def move_home(self,interrupt=False):
         """
@@ -209,7 +209,7 @@ class RobotController:
         command = f"""movel({movement}, vel=50, acc=50, ref={DR_TOOL}, mod={DR_MV_MOD_REL})"""
         self._send_message(TGT_ROBOT,command)
         self.move_home(True)
-        self._send_message(TGT_INPUT,"plug_out_done")
+        self._send_message(TGT_INPUT,"plug_out_complete")
 
     def stop(self):
         """
