@@ -49,7 +49,6 @@ def convert_coords(coords):
 class PlugInCommand():
     def __init__(self, url, target,sio):
         self.flask_url = url
-        self.initial_home = True
         self.target = target
         self.sio = sio
         

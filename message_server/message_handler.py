@@ -10,8 +10,6 @@ CMD_UNPLUG = "start_unplug"
 CMD_COLLECT_DATA = "collect_data"
 MSG_SAFETY = "safety_detection"
 MSG_CONTAINER_DOWN = "container_down"
-MSG_UNKNOWN_RESPONSE = "unknown_response"
-SFTY_RESPONSE = "safety_response"
 
 RES_FAIL = 0
 RES_SUCCESS = 1
@@ -25,6 +23,12 @@ TGT_ROBOT = "message_robot"
 TGT_INPUT = "message_input"
 TGT_SAFETY = "message_safety"
 TGT_TAKE_IMAGE = "take_image"
+
+FIELD_TARGET = "target"
+FIELD_UNIT = "unit"
+FIELD_COORDS = "coords"
+FIELD_RESULT = "result"
+FIELD_MESSAGE = "message"
 
 class MessageHandler():
     """
@@ -51,14 +55,13 @@ class MessageHandler():
 
     def handle_command(self, command, data):
         """
-        This method receives the commands and relays the correct
-        data to the robot
+        This method receives the commands and executes the correct 
+        correspondent robot command
 
         Args:
             command (str)
             data (dict)
         """
-        response = None
 
         if command == CMD_RESET_PLUG_IN or command == CMD_UNPLUG or not self.robot_controller.safety_stop:
             get_logger(__name__).log(
@@ -66,25 +69,25 @@ class MessageHandler():
             f"Executing command {command} starting"
             )
             if command == CMD_RESET_PLUG_IN:
-                response = self.robot_controller.move_home(False) 
-                if "target" in data:
-                    target = eval(data)["target"]
+                self.robot_controller.move_home(False) 
+                if FIELD_TARGET in data:
+                    target = eval(data)[FIELD_TARGET]
                     self.robot_controller.front_socket_position = self.robot_controller.fsp_list[target]
                 self.send_message(TGT_SAFETY,"start_detection")
                 self.send_message(TGT_TAKE_IMAGE,"take image")
             elif command == CMD_SOCKET_DET:
-                if data["result"] == RES_SUCCESS:
+                if data[FIELD_RESULT] == RES_SUCCESS:
                     try:
-                        unit = data["unit"]
+                        unit = data[FIELD_UNIT]
                     except KeyError:
                         raise Exception("'Unit' not in data")
                     try:
-                        coords = data["coords"]
+                        coords = data[FIELD_COORDS]
                     except KeyError:
                         raise Exception("'Coords' not in data")
-                    response = self.robot_controller.socket_detection(unit, coords)
+                    self.robot_controller.socket_detection(unit, coords)
                 
-                elif data["result"] == RES_FAIL or data["result"] == RES_UNRELIABLE:
+                elif data[FIELD_RESULT] == RES_FAIL or data[FIELD_RESULT] == RES_UNRELIABLE:
                     self.robot_controller.reposition_eoat(data)
             
             elif command == CMD_PLUG_IN:
@@ -92,10 +95,9 @@ class MessageHandler():
             
             elif command == CMD_UNPLUG:
                 self.robot_controller.plug_out()
-                self.send_message(TGT_SAFETY,"start_detection")
 
             elif command == CMD_COLLECT_DATA: #optional command
-                response = self.robot_controller.collect_data()
+                self.robot_controller.collect_data()
             
             else:
                 get_logger(__name__).log(
@@ -112,31 +114,37 @@ class MessageHandler():
                 logging.WARNING,
                 f"No execution of command {command} due to safety stop"
             )
-        return response
     
     def handle_message(self, content, message):
-        response = None
+        """
+        Handle messages that are not inherently a command and log them,
+        also includes the safety stop
+
+        Args:
+            content (str):
+            message (dict)
+        """
         if content == MSG_CONTAINER_DOWN:
             get_logger(__name__).log(
                 logging.WARNING,
                 f"{message}"
             )
         elif content == MSG_SAFETY:
-            if "result" not in message:
+            if FIELD_RESULT not in message:
                 get_logger(__name__).log(
                     logging.WARNING,
                     f"Unknown result from safety-system: {message}"
                 )
-            if message["result"] == RES_START or message["result"] == RES_END:
+            if message[FIELD_RESULT] == RES_START or message[FIELD_RESULT] == RES_END:
                 get_logger(__name__).log(
                     logging.INFO,
-                    "Safety-system: "+ message["message"]
+                    "Safety-system: "+ message[FIELD_MESSAGE]
                 )
                 self.send_message(TGT_SAFETY,"safety_start_received")
             elif message["result"] == RES_FOREIGN:
                 get_logger(__name__).log(
                     logging.WARNING,
-                    f"Safety-system: "+message["message"]
+                    f"Safety-system: "+message[FIELD_MESSAGE]
                 )
                 #Foreign object detected - stop the robot
                 self.robot_controller.stop()
@@ -145,14 +153,24 @@ class MessageHandler():
                 logging.WARNING,
                 f"Received unknown message: {message}"
             )
-        return response
 
-    def send_message(self, target=str,message=str):
+    def send_message(self, target:str,message:str):
+        """
+        This function sends messages to the robot - and saves the returned robot information.
+        This includes most importantly the current robot location, but also force information
+
+        If the message is not addressed to the robot socket - execute the server's message function
+
+        Args:
+            target (str): _description_
+            message (str): _description_
+        """
         if target == TGT_ROBOT:
             get_logger(__name__).log(logging.INFO,
                 f"Sent command {message} to robot socket")
             self.robot_socket.sendall(message.encode())
 
+            #robot_information receives the returned information about the robot (most importantly the current positon)
             robot_information = eval(self.robot_socket.recv(1024).decode())
             current_robot_pos = eval(robot_information["current_pos"])[0]
             joint_torque = robot_information["joint_torque"]
@@ -160,11 +178,11 @@ class MessageHandler():
             tool_force = robot_information["tool_force"]
 
             self.robot_controller.current_position = current_robot_pos
-            if "move_home" in message and self.robot_controller.initial_home:
+            if "move_home" in message: #when moving to actual robot-home position(without async), set actual home pos as program home pos
                 self.robot_controller.home_position = current_robot_pos
                 get_logger(__name__).log(logging.INFO,
                                         f"Received and updated new robot home pos {self.robot_controller.home_position}")
-                self.robot_controller.initial_home = False
+            
             if self.collect_data:
                 self.server.send_message(TGT_INPUT,current_robot_pos)
             get_logger(__name__).log(logging.INFO,

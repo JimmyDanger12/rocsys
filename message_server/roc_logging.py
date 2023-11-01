@@ -18,7 +18,7 @@ MAX_BYTES = 10*1024*1024
 BACKUP_COUNT = 5
 
 # global variables
-config = None # gesetzt in server
+config = None
 loggers = {}
 file_log_handler = None
 console_log_handler = None
@@ -28,7 +28,7 @@ def setup_logging(t_config):
     config = t_config
 
 def attach_log_handler(logger: Logger):
-    # if no config is set exit - that nothing is logged for tests
+    # if no config is set exit - then nothing is logged for tests
     if config is None:
         return
     # create main log handler

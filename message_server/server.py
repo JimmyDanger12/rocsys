@@ -1,5 +1,5 @@
-from flask import Flask, request, jsonify
-from flask_socketio import SocketIO, emit
+from flask import Flask, request
+from flask_socketio import SocketIO
 import logging
 from message_server.globalconfig import GlobalConfig
 from message_server.roc_logging import setup_logging, get_logger
@@ -9,20 +9,18 @@ from message_server.message_handler import MessageHandler
 FIELD_MESSAGE_TYPE = "message_type"
 FIELD_CONTENT = "content"
 FIELD_DATA = "data"
-FIELD_MESSAGE = "message"
 FIELD_ERROR = "error"
-FIELD_RESPONSE = "response"
+FIELD_ROBOT = "ROBOT"
+FIELD_CAMERA = "CAMERA"
+FIELD_SERVERCONFIG = "SERVERCONFIG"
 CMD = "cmd"
 MSG = "msg"
-TGT_ROBOT = "message_robot"
-TGT_INPUT = "message_input"
-TGT_SAFETY = "message_safety"
 TGT_ALL = "message_all"
 
 class Server():
     """
     This class implements a Flask server used to send/receive
-    messages from the ROCSYS bash script and starts the message and command handling.    
+    messages from the rocsys python script and starts the message and command handling.    
     """
 
     def __init__(self):
@@ -50,22 +48,23 @@ class Server():
         self.server = Flask(__name__)
         self.socketio = SocketIO(self.server)
 
-        host = config["SERVERCONFIG", "host"]
-        port = config["SERVERCONFIG", "port"]
-        debug = eval(config["SERVERCONFIG", "debug"])
+        host = config[FIELD_SERVERCONFIG, "host"]
+        port = config[FIELD_SERVERCONFIG, "port"]
+        debug = eval(config[FIELD_SERVERCONFIG, "debug"])
 
-        robot_ip = config["ROBOT", "ip"]
-        robot_port = config["ROBOT", "port"]
-        home_position = eval(config["ROBOT", "home_position"])
-        detection_acc = eval(config["ROBOT", "accurate_detection"])
+        robot_ip = config[FIELD_ROBOT, "ip"]
+        robot_port = config[FIELD_ROBOT, "port"]
+        home_position = eval(config[FIELD_ROBOT, "home_position"])
+        detection_acc = eval(config[FIELD_ROBOT, "accurate_detection"])
+        plug_in_method = config[FIELD_ROBOT,"plug_in_method"]
 
-        camera_os = eval(config["CAMERA","os"])
+        camera_os = eval(config[FIELD_CAMERA,"os"])
 
-        self.robot_controller = RobotController(robot_ip, robot_port, home_position, camera_os, detection_acc)
+        self.robot_controller = RobotController(robot_ip, robot_port, home_position, camera_os, detection_acc, plug_in_method)
         self.message_handler = MessageHandler(self, self.robot_controller)
 
-        if detection_acc == False:
-            robot_fsps = eval(config["ROBOT","front_socket_positions"])
+        if detection_acc == False: #only used if rocsys-client detections are inaccurate -> use hard-coded positions
+            robot_fsps = eval(config[FIELD_ROBOT,"front_socket_positions"])
             self.robot_controller.fsp_list = robot_fsps
         
         @self.socketio.on("message_output")
@@ -77,8 +76,6 @@ class Server():
             Returns:
                 returns a message to original sender
             """
-            response = None
-
             message_raw = eval(message)
             try:
                 self.handle_message(message_raw)

@@ -74,6 +74,8 @@ def on_receive_message(data):
     if data == "start_detection":
         global SEND_MESSAGES
         SEND_MESSAGES = True
+    elif data == "stop_detection":
+        SEND_MESSAGES = False
 
 if __name__ == "__main__":
     args = parse_arguments()
@@ -120,7 +122,7 @@ if __name__ == "__main__":
         ret, frame = cap.read()
         initOD = 0
         personFound = False 
-        frame = frame[:, 160:520] # changed for frame size
+        frame = cv2.flip(frame[:, 150:550],0) # changed for frame size
 
         #Let machine know if safety camera is available
         if not ret:
