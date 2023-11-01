@@ -56,7 +56,7 @@ class Server():
         robot_port = config[FIELD_ROBOT, "port"]
         home_position = eval(config[FIELD_ROBOT, "home_position"])
         detection_acc = eval(config[FIELD_ROBOT, "accurate_detection"])
-        plug_in_method = config[FIELD_ROBOT,"plug_in_method"]
+        plug_in_method = eval(config[FIELD_ROBOT,"plug_in_method"])
 
         camera_os = eval(config[FIELD_CAMERA,"os"])
 
