@@ -1,14 +1,11 @@
 import subprocess
-import requests
-import socketio
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
 import json
 import time
 import csv
 import math
 
 DOCKER_COMMAND = "docker exec -it vision-vision-1 bash -c 'rocsys-vision-client DETECT_SOCKET_FAST'"
-SLEEP_TIME = 12 #no delay needed - as robot only sends complete signal when movement is done
+SLEEP_TIME = 12 #needed for async movements
 
 MST_CMD = "cmd"
 MST_MSG = "msg"
@@ -17,15 +14,12 @@ CT_SOCKET_DET = "socket_detection"
 CT_RESET_PLUG_IN = "reset_plug_in"
 CT_PLUG_IN = "start_plug_in"
 CT_UNPLUG = "start_unplug"
-CT_UNKOWN = "unkown_response"
+CT_UNKNOWN = "unknown_response"
 CT_COLLECT_DATA = "collect_data"
 
 FIELD_MESSAGE_TYPE = "message_type"
 FIELD_CONTENT = "content"
 FIELD_DATA = "data"
-FIELD_MESSAGE = "message"
-FIELD_ERROR = "error"
-FIELD_RESPONSE = "response"
 
 RES_NO_SUCCESS = 0
 RES_SUCCESS = 1
@@ -47,6 +41,12 @@ def convert_coords(coords):
     return converted_coords
 
 class PlugInCommand():
+    """
+    This command sends a message to the main script to execute the plug-in motions. 
+    First, a message is sent to reset the robot to home position.
+    Then, depending on the response take an image or send a plug-in command to the robot.
+    A delay is implemented between some commands to allow the main script to continue running and allow async movements to complete.
+    """
     def __init__(self, url, target,sio):
         self.flask_url = url
         self.target = target
@@ -55,7 +55,7 @@ class PlugInCommand():
         self.sio.on("take_image",self.handle_response)
     
     def handle_response(self,msg):
-        print(msg)
+        print("Received message:",msg)
         if msg == MSG_TAKE:
             self.send_message(self.take_image())
         elif msg == MSG_RETAKE:
@@ -74,7 +74,6 @@ class PlugInCommand():
         self.sio.emit("message_output",json.dumps(output))
     
     def reset_plug_in(self,target):
-        print(target)
         message_type = MST_CMD
         content = CT_RESET_PLUG_IN
         data = {"target":target}
@@ -98,10 +97,10 @@ class PlugInCommand():
         data = {}
 
         if "not running" in docker_output:
-            print(docker_output)
+            print(f"Error: {docker_output}")
             content = "container_down"
         else:
-            print("Container up and running!")
+            print("Successfully received message from docker container!")
 
         if "success" in docker_output:
             message_type = MST_CMD
@@ -127,7 +126,7 @@ class PlugInCommand():
                 "message": docker_output
             }
         else:
-            content = CT_UNKOWN
+            content = CT_UNKNOWN
             data = {
                 "message": docker_output
             }
@@ -154,6 +153,9 @@ class PlugInCommand():
         return output
     
 class PlugOutCommand():
+    """
+    This command sends a message to the main script to execute the plug-out motions
+    """
     def __init__(self, url):
         self.flask_url = url
     
@@ -170,7 +172,7 @@ class PlugOutCommand():
         
         return output
 
-class CollectDataCommand(): #Currently unused
+class CollectDataCommand(): #Currently unused and not updated
     def __init__(self, url):
         self.flask_url = url
         self.amount = 150
@@ -209,7 +211,7 @@ class CollectDataCommand(): #Currently unused
                 docker_output = e.output
 
             if "not running" in docker_output:
-                print(docker_output)
+                print("docker:",docker_output)
             else:
                 print("image taken")
             result = None
