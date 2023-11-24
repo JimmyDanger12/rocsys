@@ -8,8 +8,6 @@ Project members were:
 - Ise Kooij
 - Donizetta Daffa Aqilla Harley
 
-All code, including documentation with the exeption of parts of the vision code was created by Simon Gmeiner, so inquiries should be documented at 221818@student.hhs.nl. After completion of the project the code will not be maintained or updated. Inquiries will not be answered after completion and evaluation.
-
 ## Installation:
 
 - Install DRL-Studio:
@@ -28,7 +26,7 @@ All code, including documentation with the exeption of parts of the vision code 
     - start safety-vision/voloV8_live.py
       - if you want to view the safety detection -> press 1, otherwise 2
 - rocsys computer
-    - start the docker container
+    - start the docker container to access the rocsys vision client
     - start rocsys-files/run_robot_task.py to view the UI and input robot commands
 
 ## Logging
